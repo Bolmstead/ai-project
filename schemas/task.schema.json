@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "default": {},
+  "title": "Root Schema",
+  "required": ["title", "description", "status", "assignedClientUsernames"],
+  "properties": {
+    "title": {
+      "type": "string",
+      "default": "",
+      "title": "The title Schema",
+      "examples": ["Write a Book"]
+    },
+    "description": {
+      "type": "string",
+      "default": "",
+      "title": "The description Schema",
+      "examples": ["Make it good"]
+    },
+    "status": {
+      "type": "string",
+      "default": "",
+      "title": "The status Schema",
+      "examples": ["To Do"]
+    },
+    "assignedClientUsernames": {
+      "type": "array",
+      "default": [],
+      "title": "The assignedClientUsernames Schema",
+      "items": {
+        "type": "string",
+        "title": "A Schema",
+        "examples": ["3jcdi2", "215saf44"]
+      },
+      "examples": [["3jcdi2", "215saf44"]]
+    }
+  },
+  "examples": [
+    {
+      "title": "Write a Book",
+      "description": "Make it good",
+      "status": "To Do",
+      "assignedClientUsernames": ["3jcdi2", "215saf44"]
+    }
+  ]
+}
