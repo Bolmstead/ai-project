@@ -12,7 +12,20 @@ const conversationSchema = new Schema(
     },
     messages: [
       {
-        type: "String",
+        type: Schema.Types.ObjectId,
+        ref: "message",
+      },
+    ],
+    recentMessages: [
+      {
+        content: {
+          type: String,
+          required: true,
+        },
+        from: {
+          type: String,
+          required: true,
+        },
       },
     ],
   },

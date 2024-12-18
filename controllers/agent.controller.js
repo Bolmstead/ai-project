@@ -10,8 +10,6 @@ dotenv.config();
 const openAIBearerToken = process.env.OPENAI_API_KEY;
 
 async function sendMessage(convo, sender, message, receiver) {
-  console.log("sendMessage start");
-
   const response = await axios.post(
     "https://api.openai.com/v1/chat/completions",
     {
@@ -19,9 +17,9 @@ async function sendMessage(convo, sender, message, receiver) {
       messages: [
         {
           role: "system",
-          content: `You are having a conversation with another AI agent named ${
-            sender.name
-          }. Your personalities are: ${receiver.traits.join(", ")}`,
+          content: `You are having a conversation with another AI agent. Your personalities are: ${receiver.traits.join(
+            ", "
+          )} and the last 10 messages of the conversation are ${convo.recentMessages.toString()}`,
         },
         { role: "user", content: message },
       ],
@@ -46,6 +44,16 @@ async function sendMessage(convo, sender, message, receiver) {
     });
     await newMessage.save();
     convo.messages.push(newMessage);
+    if (convo.recentMessages.length > 10) {
+      convo.recentMessages.shift({
+        content: returnedMessage,
+        from: receiver.name,
+      });
+    }
+    convo.recentMessages.push({
+      content: returnedMessage,
+      from: receiver.name,
+    });
     await convo.save();
     console.log(`From ${receiver.name}: `, returnedMessage);
   } else {
@@ -55,51 +63,7 @@ async function sendMessage(convo, sender, message, receiver) {
     // flip sender and receiver
     console.log("in Timeout");
     return await sendMessage(convo, receiver, returnedMessage, sender);
-  }, 2000);
-}
-
-export async function getAllAgents(req, res, next) {
-  try {
-    const Agents = await Agent.find();
-    return res.json({ agents: Agents });
-  } catch (error) {
-    console.log(error);
-    return next(error);
-  }
-}
-
-export async function createAgent(req, res, next) {
-  try {
-    // Extract parameters from the request body
-    const { name, traits, preferences, happiness } = req.body;
-
-    // Validate the required fields
-    if (!name || !traits || !preferences || happiness === undefined) {
-      return res.status(400).json({
-        message:
-          "Missing required fields: name, traits, preferences, or happiness",
-      });
-    }
-
-    // Create a new agent
-    const newAgent = new Agent({
-      name,
-      traits,
-      preferences,
-      happiness,
-    });
-
-    // Save the agent to the database
-    const savedAgent = await newAgent.save();
-
-    return res.status(201).json({
-      message: "Agent created successfully",
-      agent: savedAgent,
-    });
-  } catch (error) {
-    console.error(error);
-    return next(error);
-  }
+  }, 15000);
 }
 
 // Agent conversation flow
@@ -145,8 +109,65 @@ export async function agentConversation(req, res, next) {
     receiver.conversations.push(newConversation);
     await receiver.save();
 
+    const newMessage = new Message({
+      sender: sender._id,
+      content: message,
+      conversation: newConversation._id,
+    });
+    await newMessage.save();
+    newConversation.messages.push(newMessage);
+    newConversation.recentMessages.push({
+      content: message,
+      from: sender.name,
+    });
+    await newConversation.save();
+
     await sendMessage(newConversation, sender, message, receiver);
   } catch (error) {
+    return next(error);
+  }
+}
+
+export async function getAllAgents(req, res, next) {
+  try {
+    const Agents = await Agent.find();
+    return res.json({ agents: Agents });
+  } catch (error) {
+    console.log(error);
+    return next(error);
+  }
+}
+
+export async function createAgent(req, res, next) {
+  try {
+    // Extract parameters from the request body
+    const { name, traits, preferences, happiness } = req.body;
+
+    // Validate the required fields
+    if (!name || !traits || !preferences || happiness === undefined) {
+      return res.status(400).json({
+        message:
+          "Missing required fields: name, traits, preferences, or happiness",
+      });
+    }
+
+    // Create a new agent
+    const newAgent = new Agent({
+      name,
+      traits,
+      preferences,
+      happiness,
+    });
+
+    // Save the agent to the database
+    const savedAgent = await newAgent.save();
+
+    return res.status(201).json({
+      message: "Agent created successfully",
+      agent: savedAgent,
+    });
+  } catch (error) {
+    console.error(error);
     return next(error);
   }
 }
