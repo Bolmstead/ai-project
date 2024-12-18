@@ -10,10 +10,14 @@ dotenv.config();
 
 const router = Router();
 
-const shitcoinTrackerBotToken =
-  process.env.REACT_APP_SHITCOIN_TRACKER_TELEGRAM_BOT_TOKEN;
+const shitcoinTrackerBotToken = console.log(
+  "🚀 ~ shitcoinTrackerBotToken:",
+  shitcoinTrackerBotToken
+);
+process.env.REACT_APP_SHITCOIN_TRACKER_TELEGRAM_BOT_TOKEN;
 
 const botsChatId = process.env.REACT_APP_BOTS_TELEGRAM_CHAT_ID;
+console.log("🚀 ~ botsChatId:", botsChatId);
 
 router.use("/agents", agentRoutes);
 router.post("/family_presents", async (req, res) => {
