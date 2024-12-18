@@ -17,6 +17,7 @@ const botsChatId = process.env.REACT_APP_BOTS_TELEGRAM_CHAT_ID;
 
 router.use("/agents", agentRoutes);
 router.post("/family_presents", async (req, res) => {
+  console.log("🚀 ~ router.post ~ req.body:", req.body);
   const { msg, memberName } = req.body;
   console.log("🚀 ~ router.post ~ memberName:", memberName);
   console.log("🚀 ~ sendTelegramMessage ~ msg:", msg);
