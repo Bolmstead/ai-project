@@ -10,11 +10,9 @@ dotenv.config();
 
 const router = Router();
 
-const shitcoinTrackerBotToken = console.log(
-  "🚀 ~ shitcoinTrackerBotToken:",
-  shitcoinTrackerBotToken
-);
-process.env.REACT_APP_SHITCOIN_TRACKER_TELEGRAM_BOT_TOKEN;
+const shitcoinTrackerBotToken =
+  process.env.REACT_APP_SHITCOIN_TRACKER_TELEGRAM_BOT_TOKEN;
+console.log("🚀 ~ shitcoinTrackerBotToken:", shitcoinTrackerBotToken);
 
 const botsChatId = process.env.REACT_APP_BOTS_TELEGRAM_CHAT_ID;
 console.log("🚀 ~ botsChatId:", botsChatId);
